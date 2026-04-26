@@ -1,0 +1,30 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+
+# Raw market data — too large for version control
+NSEI-Data/
+NSEI-Data.zip
+NIFTY.csv
+
+# Sensitive config
+.app_bot/
+
+# Internal tool session state
+deep_project_session.json
+deep_plan_config.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Outputs (generated, not source)
+outputs/
+pipeline.lock
+pipeline.log
