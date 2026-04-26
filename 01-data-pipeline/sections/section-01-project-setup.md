@@ -204,6 +204,18 @@ No `pass`, no `def`, no imports needed — just a docstring. This keeps the stub
 
 ---
 
+## Implementation Notes (Actual Build)
+
+- `pyproject.toml` includes `[tool.hatch.build.targets.wheel] packages = ["pipeline"]` — required because project name (`nse-options-pipeline`) differs from package directory (`pipeline/`).
+- `[tool.pytest.ini_options]` includes `pythonpath = ["."]` for portable test discovery.
+- `tests/__init__.py` was omitted — making tests/ a package changes conftest discovery; pytest handles it correctly without it.
+- `tiny_day_df` uses per-strike bid/ask/OI variation and snapshot-level bid_qty progression for non-degenerate OFI/spread tests.
+- `tmp_data_dir` writes tz-naive `captured_at` (matching real NSE CSV format); `load_day()` (section-03) is responsible for localizing to IST.
+- `synthetic_spot_5m` uses `dt = 5/(250*375)` (NSE 250-day, 375-min calendar); ~20% vol is approximate.
+- Smoke test explicitly imports all 9 pipeline submodule stubs (not just the package root).
+- **Files created:** `pyproject.toml`, `run_pipeline.py`, `pipeline/__init__.py`, `pipeline/{config,ingestion,iv,realized_vol,vrp,ofi,liquidity,rates,writer}.py`, `tests/conftest.py`, `tests/test_smoke.py`, `outputs/` (empty dir).
+- **Tests:** 2 passed (`test_pipeline_package_importable`, `test_fixtures_load`).
+
 ## Definition of Done
 
 This section is complete when:
