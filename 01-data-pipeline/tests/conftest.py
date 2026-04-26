@@ -3,8 +3,15 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 import pytz
+from pipeline.config import Config, default_config as _default_config
 
 _IST = pytz.timezone("Asia/Kolkata")
+
+
+@pytest.fixture
+def default_config(tmp_path: Path) -> Config:
+    """Default pipeline Config pointing at a temporary data and output dir."""
+    return _default_config(data_dir=tmp_path, output_dir=tmp_path / "outputs")
 
 
 @pytest.fixture

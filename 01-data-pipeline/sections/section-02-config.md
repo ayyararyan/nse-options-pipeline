@@ -105,6 +105,17 @@ The interval for `scipy.optimize.brentq` when solving for IV. The lower bound (1
 
 ---
 
+## Implementation Notes (Actual Build)
+
+- Removed unused `field` import from `dataclasses`.
+- Tightened type annotations: `brentq_bounds: tuple[float, float]`, `atm_increments: dict[str, int]`.
+- `__post_init__` uses `is_dir()` instead of `exists()` to catch file-instead-of-directory mistakes.
+- Added `ann_factor > 0` guard and `brentq_bounds[0] < brentq_bounds[1]` guard.
+- Added eager `pytz.timezone(self.timezone)` call to catch invalid timezone strings at construction time (requires `pytz` import in config.py).
+- `default_config` fixture added to `tests/conftest.py` (returns Config with `data_dir=tmp_path`).
+- **Files created/modified:** `pipeline/config.py`, `tests/test_config.py`, `tests/conftest.py`.
+- **Tests:** 5 passed (test_config.py) + 2 smoke tests = 7 total.
+
 ## Dependency Notes
 
 - **section-01** must have created `pipeline/__init__.py` before this file can be imported by tests or other modules.
