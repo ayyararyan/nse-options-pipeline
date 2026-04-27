@@ -66,7 +66,19 @@ def tiny_day_df() -> pd.DataFrame:
                         "underlying_value": 24125.0,
                     })
 
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    # Add derived columns that load_day() computes (section-03 contract)
+    df["underlying_value_ffill"] = df["underlying_value"].ffill()
+    df["mid_price"] = (df["bid_price"] + df["ask_price"]) / 2
+    invalid_mid = (
+        df["bid_price"].isna() | df["ask_price"].isna() |
+        (df["bid_price"] <= 0) | (df["ask_price"] <= 0)
+    )
+    df.loc[invalid_mid, "mid_price"] = float("nan")
+    df["time_to_expiry"] = (
+        (df["expiry"] - df["captured_at"]).dt.total_seconds() / (365.25 * 86400)
+    ).clip(lower=0.0)
+    return df
 
 
 @pytest.fixture

@@ -274,6 +274,20 @@ def add_computed_iv(df: pd.DataFrame, rate: float, cfg) -> pd.DataFrame:
 
 ---
 
+## Implementation Notes (Actual Build)
+
+- `add_computed_iv` calls `compute_iv` for the brentq solve (no duplicated Brent logic). Pre-checks (zero_quote, expired) are inlined for bucket counting; on None return, intrinsic is re-tested to classify `iv_nan_intrinsic` vs `iv_nan_no_root`.
+- `_isnan` helper replaced with `pd.isna()` throughout.
+- `iterrows` replaced with `itertuples` (3–5× faster).
+- `option_type` guard added to `bs_price` — raises `ValueError` for unknown types.
+- `cfg: Config` type annotation added to `add_computed_iv`.
+- `compute_iv` returns `Optional[float]` (None on failure); `add_computed_iv` stores `float('nan')` in the DataFrame column.
+- Test names renamed: `test_iv_zero_bid` → `test_iv_mid_zero`, `test_iv_zero_ask` → `test_iv_mid_negative`.
+- Convergence logging test strengthened: asserts all 5 bucket names appear and counts sum to row count.
+- `tiny_day_df` fixture updated in `conftest.py` to add `mid_price`, `time_to_expiry`, and `underlying_value_ffill` columns (derived from section-03 contract).
+- **Files created:** `pipeline/iv.py`, `tests/test_iv.py`. Modified: `tests/conftest.py`.
+- **Tests:** 26 passed (10 new for section-04 + 16 prior).
+
 ## Acceptance Criteria
 
 All of the following must hold before this section is considered done:
