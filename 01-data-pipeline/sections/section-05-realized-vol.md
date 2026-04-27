@@ -279,6 +279,18 @@ Calendar-365 is used throughout. Specifically:
 
 Mixing calendar-365 IV with trading-252 RV produces a ~3% systematic gap in the VRP that would create a persistent positive VRP bias.
 
+## Implementation Notes (Actual Build)
+
+- `parzen_weights(H)` fully vectorized via `np.where`.
+- `optimal_bandwidth`: ξ = ω / IQ^{1/4} (ω = sqrt(ω²), not ω² directly — bug caught in code review).
+- `realized_kernel`: returns `max(rk, 0.0)` to enforce non-negativity even when called directly.
+- `compute_daily_rk`: returns `float("nan")` for rk_daily_var when n_bars < 2, so rolling means ignore data gaps.
+- `compute_rolling_rv`: uses `np.sqrt(...)` instead of `.apply(math.sqrt)` for vectorized dispatch.
+- `cfg: Config` type annotation added to `compute_daily_rk`.
+- `drop_duplicates(keep='first')` documented: NSE rows at same timestamp share identical `underlying_value`.
+- **Files created:** `pipeline/realized_vol.py`, `tests/test_realized_vol.py`.
+- **Tests:** 38 passed (12 new for section-05 + 26 prior, including test_compute_daily_rk_too_few_bars added post-review).
+
 ### Integration with Pipeline Orchestration (section-10)
 
 In `run_pipeline.py`, this module is called as:
