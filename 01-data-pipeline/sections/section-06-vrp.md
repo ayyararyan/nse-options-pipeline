@@ -10,9 +10,15 @@ This section implements `pipeline/vrp.py`, which computes the daily Variance Ris
 
 ---
 
-## File to Create
+## Files Created
 
-`pipeline/vrp.py`
+- `pipeline/vrp.py` — implementation
+- `tests/test_vrp.py` — 17 tests, all passing
+
+## Deviations from Plan
+
+- `compute_vrp()` returns a DataFrame indexed by date with **no `date` column** (dropped redundant column per code review; callers use `.reset_index()` if a flat column is needed).
+- `extract_atm_iv()` extrapolation logic: when both available expiries bracket T_TARGET, the flag is `False` (correct); single-expiry or non-bracketing case sets `True`. Exact T == T_TARGET edge case (two entries in `upper`, none in `lower`) is treated as extrapolated per plan spec — this is practically never encountered with NSE weekly/monthly expiries.
 
 ---
 
